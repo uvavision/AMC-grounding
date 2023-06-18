@@ -51,7 +51,17 @@ def create_dataset(dataset, config):
     
     elif dataset=='grounding':   
         test_dataset = grounding_dataset(config['test_file'], test_transform, config['image_root'], mode='test')             
-        return test_dataset   
+        return test_dataset 
+    
+    elif dataset == 'grounding_flickr':
+        test_flickr_transform = alb.Compose([
+            alb.Resize(256,256),
+            alb.Normalize(mean=(0.48145466, 0.4578275, 0.40821073), std=(0.26862954, 0.26130258, 0.27577711), p=1.0),
+            ToTensorV2(),
+        ])
+        test_dataset = grounding_dataset_flickr(test_flickr_transform, config['image_root'], config['image_ids_file'], config['phrase_box_file'], config['sentences_file'])     
+        
+        return test_dataset 
 
 def vqa_collate_fn(batch):
     image_list, question_list, answer_list, weight_list, n = [], [], [], [], []
