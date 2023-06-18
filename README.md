@@ -27,11 +27,15 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch --nproc_
 ```
 
 ### Evaluation
-You can run the following command to evaluate the RefCOCO+ and RefCLEF datasets using all the checkpoints in your ALBEF_Grounding folder:
+To evaluate Flickr30k, please follow [info-ground](https://github.com/BigRedT/info-ground) to process the data.
+
+You can run the following command to evaluate the RefCOCO+, RefCLEF and Flickr30k datasets using all the checkpoints in your ALBEF_Grounding folder:
 ```Shell
 CUDA_VISIBLE_DEVICES=1 python grounding_eval_singlegpu.py --checkpoint ALBEF_Grounding --output_dir ALBEF_Grounding/refcoco_results --config configs/Grounding_refcoco.yaml
 
 CUDA_VISIBLE_DEVICES=1 python grounding_eval_singlegpu_refclef.py --checkpoint ALBEF_Grounding --output_dir ALBEF_Grounding/refclef_results --config configs/Grounding_refclef.yaml
+
+CUDA_VISIBLE_DEVICES=1 python grounding_eval_singlegpu_flickr.py --checkpoint ALBEF_Grounding --output_dir ALBEF_Grounding/flickr_results --config configs/Grounding_flickr.yaml
 ```
 
 You can also download these [checkpoints](https://drive.google.com/drive/folders/1syngIWXbySzbcb7lZnmoL7_-H6RAeb3H?usp=sharing) and put them into the corresponding folder to reproduce our results:
@@ -39,6 +43,8 @@ You can also download these [checkpoints](https://drive.google.com/drive/folders
 CUDA_VISIBLE_DEVICES=1 python grounding_eval_singlegpu.py --checkpoint best_refcoco.pth --output_dir best_refcoco_results --config configs/Grounding_refcoco.yaml
 
 CUDA_VISIBLE_DEVICES=1 python grounding_eval_singlegpu_refclef.py --checkpoint best_refclef.pth --output_dir best_refclef_results --config configs/Grounding_refclef.yaml
+
+CUDA_VISIBLE_DEVICES=1 python grounding_eval_singlegpu_flickr.py --checkpoint best_flickr.pth --output_dir best_flickr_results --config configs/Grounding_flickr.yaml
 ```
 
 ### Citing
