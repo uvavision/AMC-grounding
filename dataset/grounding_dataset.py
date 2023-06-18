@@ -43,3 +43,63 @@ class grounding_dataset(Dataset):
             return image, caption, self.img_ids[img_id]
         else:
             return image, caption, ann['ref_id'], ann['image']
+        
+        
+class grounding_dataset_flickr(Dataset):
+    def __init__(self, transform, image_dir, image_ids_txt_file, phrase_boxes_json, sentences_json):
+        super().__init__()
+        self.max_words = 50
+        
+        self.transform = transform
+        self.image_dir = image_dir
+        self.splits = []
+        self.processed_image_path = []
+        self.processed_phrases = []
+        self.processed_gt_boxes = []
+        
+        assert len(image_ids_txt_file)==len(phrase_boxes_json)==len(sentences_json)
+
+        for i in range(0,len(image_ids_txt_file)):
+            image_ids_txt = open(image_ids_txt_file[i], 'rb').read()
+            image_ids = [idx.decode() for idx in image_ids_txt.split()]
+            phrase_boxes = json.load(open(phrase_boxes_json[i],'r'))
+            sentences = json.load(open(sentences_json[i],'r'))
+        
+            for img_id in image_ids:
+                sents = sentences[img_id]
+                p_boxes = phrase_boxes[img_id]
+                for sent in sents:
+                    for phrase in sent['phrases']:
+                        if phrase['phrase_id'] not in phrase_boxes[img_id]['boxes']:
+                            continue
+                        else:
+                            if 'val' in image_ids_txt_file[i]:
+                                self.splits.append('val')
+                            else:
+                                self.splits.append('test')
+                            self.processed_image_path.append(img_id)
+                            self.processed_phrases.append(pre_caption(phrase['phrase'],self.max_words))
+                            self.processed_gt_boxes.append(phrase_boxes[img_id]['boxes'][phrase['phrase_id']])
+                    
+        
+
+    def get_image_path(self,image_id):
+        return os.path.join(
+            self.image_dir,
+            f'{image_id}.jpg')
+            
+    def __len__(self):
+        return len(self.processed_image_path)
+
+    def __getitem__(self,i):
+
+        image_id = self.processed_image_path[i]
+        phrase = self.processed_phrases[i]
+        gt_boxes = self.processed_gt_boxes[i]
+        
+        image_path = os.path.join(self.image_dir,image_id+'.jpg')
+        image_pil = Image.open(image_path).convert('RGB') 
+        w,h = image_pil.size
+        image = self.transform(image = np.array(image_pil))['image']
+        
+        return image, phrase, self.splits[i], h, w, i
