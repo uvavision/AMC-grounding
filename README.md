@@ -14,13 +14,11 @@ We propose a margin-based loss for vision-language model pretraining that encour
 - Numpy, scikit-image, opencv-python, pillow, matplotlib, timm
 
 ### Data
--  Visual Genome (VG) images
-Please download [VG](https://visualgenome.org/) images first. 
--  Annotations
-Please download our pre-processed [text annotations](https://drive.google.com/drive/folders/1XhFVjJ2cm2HNeNVOZrUrPG_MpprHLWgv?usp=share_link) for VG images. You may need to modify the image path in each sample to load images. 
+-  Visual Genome (VG) images: Please download [VG](https://visualgenome.org/) images first. 
+-  Annotations: Please download our pre-processed [text annotations](https://drive.google.com/drive/folders/1XhFVjJ2cm2HNeNVOZrUrPG_MpprHLWgv?usp=share_link) for VG images. You may need to modify the image path in each sample to load images.
 
 ### Train
-You can run the following command to train the model:
+After downloading the pre-trained [ALBEF-14M](https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF.pth) model, You can run the following command to train the model:
 ```Shell
 # Train the model using bounding box annotations from VG
 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python -m torch.distributed.launch --nproc_per_node=8 --use_env Pretrain.py --config configs/Pretrain.yaml --output_dir ALBEF_Grounding --checkpoint ALBEF.pth 
@@ -59,3 +57,6 @@ If you find our paper/code useful, please consider citing:
   year={2023}
 }
 ```
+
+### Acknowledgement
+The implementation of AMC relies on the code from [ALBEF](https://github.com/salesforce/ALBEF/tree/main). We would like to thank the authors who have open-sourced their work and made it available to the community. 
