@@ -26,10 +26,6 @@ class pretrain_dataset(Dataset):
         self.max_words = max_words
         self.phrase_input = phrase_input
 
-        if not add_gcam:
-            self.transform = transform[0]
-            self.boximg_transform = transform[1]
-        self.sigma = -1
         self.add_gcam = add_gcam
         self.mask_all = mask_all
         
