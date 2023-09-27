@@ -223,6 +223,70 @@ def computeIoU(box1, box2):
         inter = 0
     union = box1[2]*box1[3] + box2[2]*box2[3] - inter
     return float(inter)/union
+
+
+def grounding_eval_flickr(results, refer_boxes, mask_size=16):
+    correct_test_d, correct_val_d = 0, 0
+    num_test,num_val = 0,0
+    
+    for res in tqdm(results):
+        # ref_id is the index
+        ref_boxes_id = res['ref_id']
+        boxes = refer_boxes[ref_boxes_id]
         
+        h = res['image_height']
+        w = res['image_width']
         
+        split = res['split']
+        mask = res['pred'].cuda().view(1,1,mask_size,mask_size)    
+        mask = F.interpolate(mask,size = (h,w), mode='bicubic').squeeze()
+        
+        # point accuracy
+
+        y,x = (mask==torch.max(mask)).nonzero()[0]
+        x = int(x)
+        y = int(y)
+        center_point = [x,y]
+        pt_acc = calculate_point_acc(boxes, w,h, center_point)
+            
+
+        if split == 'test':
+            num_test += 1
+            if pt_acc:   
+                correct_test_d += 1  
+
+        elif split=='val':
+            num_val += 1    
+            if pt_acc:   
+                correct_val_d += 1  
+
+    eval_result = {}
+    
+    if num_val != 0:
+        eval_result['val_d'] = correct_val_d/num_val
+        
+    if num_test != 0:
+        eval_result['test'] = correct_test_d/num_test
+        
+    for metric, acc in eval_result.items():
+        print(f'{metric}: {acc:.3f}')
+        
+    return eval_result    
+
+
+def calculate_point_acc(boxes, w,h,center_point):   
+    for box in boxes:  
+        if point_in_box_xyxy(center_point, box):
+            return 1
+    return 0  
+
+
+def point_in_box_xyxy(pt,bbox):
+    x1,y1,x2, y2 = bbox
+    x,y = pt
+    is_inside = False
+    if x>x1 and x<x2 and y>y1 and y<y2:
+        is_inside=True
+    
+    return is_inside        
         
