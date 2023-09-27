@@ -4,7 +4,7 @@ from torchvision import transforms
 from PIL import Image
 
 from dataset.caption_dataset import pretrain_dataset
-from dataset.grounding_dataset import grounding_dataset
+from dataset.grounding_dataset import grounding_dataset, grounding_dataset_flickr
 from dataset.randaugment_imgonly import RandomAugment_img
 import albumentations as alb
 from albumentations.pytorch.transforms import ToTensorV2
