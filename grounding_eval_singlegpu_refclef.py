@@ -43,7 +43,7 @@ def val(model, data_loader, tokenizer, device, gradcam_mode, block_num):
         model.text_encoder.base_model.base_model.encoder.layer[block_num].crossattention.self.save_attention = True
      
     result = []
-    for image, text, ref_ids, image_path in metric_logger.log_every(data_loader, print_freq, header):
+    for image, text, ref_ids, image_path, splits in metric_logger.log_every(data_loader, print_freq, header):
         image = image.to(device)
         text_input = tokenizer(text, padding='longest', return_tensors="pt").to(device)  
         
@@ -96,8 +96,8 @@ def val(model, data_loader, tokenizer, device, gradcam_mode, block_num):
                 grad = grad[:, :, 0, 1:].reshape(image.size(0), -1, 24, 24).clamp(0)
                 gradcam = (cam * grad).mean(1)
 
-        for r_id, cam , path in zip(ref_ids, gradcam, image_path):
-            result.append({'ref_id':r_id.item(), 'pred':cam, 'image_path': path})
+        for r_id, cam , path in zip(ref_ids, gradcam, image_path, splits):
+            result.append({'ref_id':r_id.item(), 'pred':cam, 'image_path': path, 'split':split})
   
     if gradcam_mode=='itm':
         model.text_encoder.base_model.base_model.encoder.layer[block_num].crossattention.self.save_attention = False             
