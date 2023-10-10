@@ -188,12 +188,12 @@ def grounding_eval(results,dets,refer,alpha,mask_size=24, on_bbox = True, subset
                 if IoU_det >= 0.5:   
                     correct_val_d += 1  
         else:
-            if 'test' in ref['split']:
+            if 'test' in res['split']:
                 num_test += 1
                 if IoU_det >= 0.5:   
                     correct_test_d += 1  
                     
-            elif ref['split']=='val':
+            elif res['split']=='val':
                 num_val += 1    
                 if IoU_det >= 0.5:   
                     correct_val_d += 1  
