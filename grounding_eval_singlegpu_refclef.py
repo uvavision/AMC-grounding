@@ -96,7 +96,7 @@ def val(model, data_loader, tokenizer, device, gradcam_mode, block_num):
                 grad = grad[:, :, 0, 1:].reshape(image.size(0), -1, 24, 24).clamp(0)
                 gradcam = (cam * grad).mean(1)
 
-        for r_id, cam , path in zip(ref_ids, gradcam, image_path, splits):
+        for r_id, cam , path, split in zip(ref_ids, gradcam, image_path, splits):
             result.append({'ref_id':r_id.item(), 'pred':cam, 'image_path': path, 'split':split})
   
     if gradcam_mode=='itm':
