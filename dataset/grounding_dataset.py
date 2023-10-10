@@ -41,6 +41,8 @@ class grounding_dataset(Dataset):
             img_id = ann['image'].split('/')[-1]
 
             return image, caption, self.img_ids[img_id]
+        elif 'split' in ann:
+            return image, caption, ann['ref_id'], ann['image'], ann['split']
         else:
             return image, caption, ann['ref_id'], ann['image']
         
